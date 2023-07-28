@@ -34,7 +34,7 @@ export default function Home() {
   };
   const { run } = useRequest(
     async (essay: essay) => {
-      await axios.post(`http://localhost:55327/api/c/${essay.url}`, {
+      await axios.post(`https://api.imgen.space/api/c/${essay.url}`, {
         ...essay,
       });
     },

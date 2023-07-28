@@ -21,7 +21,7 @@ export default function Preview() {
   const code = useSearchParams().get("code");
   const { data, error, loading } = useRequest(async () => {
     const resp = await axios.get<string>(
-      `http://localhost:55327/api/c${id}?code=${code}`
+      `https://api.imgen.space/api/c${id}?code=${code}`
     );
     return resp.data;
   });
