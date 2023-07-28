@@ -22,10 +22,6 @@ const MdEditor = dynamic(() => import("react-markdown-editor-lite"), {
   ssr: false,
 });
 
-const MdEditorExample = dynamic(() => import("react-markdown-editor-lite"), {
-  ssr: false,
-});
-
 const mdParser = new MarkdownIt();
 
 export default function Home() {
@@ -60,25 +56,29 @@ export default function Home() {
     <>
       <div className="flex flex-col items-center justify-between  w-full h-screen ">
         <Top cb={switchTab} />
-        {active === "Text" ? (
-          <MdEditor
-            className=" flex w-full flex-grow"
-            renderHTML={(text) => mdParser.render(text)}
-            onChange={handleEditorChange}
-            view={{ menu: false, md: true, html: true }}
-            value={content}
-          />
-        ) : (
-          <MdEditorExample
-            className=" flex w-full flex-grow"
-            renderHTML={(text) => mdParser.render(text)}
-            onChange={handleEditorChange}
-            view={{ menu: false, md: true, html: true }}
-            value={`## Hello World ! 
+        <div className="flex w-full flex-grow bg-white bor">
+          {active === "Text" ? (
+            <MdEditor
+              className=" flex w-full flex-grow"
+              style={{ borderStyle: "none" }}
+              renderHTML={(text) => mdParser.render(text)}
+              onChange={handleEditorChange}
+              view={{ menu: false, md: true, html: true }}
+              value={content}
+            />
+          ) : (
+            <MdEditor
+              className="border-none flex w-full flex-grow "
+              style={{ borderStyle: "none" }}
+              renderHTML={(text) => mdParser.render(text)}
+              onChange={handleEditorChange}
+              view={{ menu: false, md: true, html: true }}
+              value={`## Hello World ! 
 ### Here is a simple example which cant be edited`}
-            readOnly={true}
-          />
-        )}
+              readOnly={true}
+            />
+          )}
+        </div>
       </div>
       <Bottom
         {...{
