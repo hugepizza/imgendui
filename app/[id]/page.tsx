@@ -1,46 +1,40 @@
 "use client";
-import React, { ChangeEventHandler, useEffect, useState } from "react";
-import MarkdownIt from "markdown-it";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useContext } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 import "react-markdown-editor-lite/lib/index.css";
 
-import dynamic from "next/dynamic";
 import "react-markdown-editor-lite/lib/index.css";
 import { Footer } from "../components/foot";
-import { useRequest } from "ahooks";
 import axios from "axios";
-const MdEditor = dynamic(() => import("react-markdown-editor-lite"), {
-  ssr: false,
-});
-
-const mdParser = new MarkdownIt();
+import { ThemeContext } from "../contexts/theme_code";
+import Previewer from "../components/editor/previewer";
+import useSWR from "swr";
+import { essay } from "@/app/types/essay";
 
 export default function Preview() {
   const id = usePathname();
-  const code = useSearchParams().get("code");
-  const { data, error, loading } = useRequest(async () => {
-    const resp = await axios.get<string>(
-      `https://api.imgen.space/api/c${id}?code=${code}`
-    );
-    return resp.data;
-  });
+  const theme = useContext(ThemeContext);
+  const router = useRouter();
+  const { data } = useSWR(
+    `https://api.imgen.space/api/c${id}`,
+    async (url: string) => {
+      const resp = await axios.get<essay>(url);
+      return resp.data;
+    }
+  );
   return (
-    <div className="flex flex-col items-center justify-between  w-full h-screen ">
-      {error && (
-        <div className="flex justify-center items-center w-full h-full">
-          Unauthorized
-        </div>
-      )}
-      {!error && !loading && (
-        <MdEditor
-          className=" flex w-full flex-grow"
-          renderHTML={(text) => mdParser.render(text)}
-          view={{ menu: false, md: false, html: true }}
-          value={data?.toString()}
-          readOnly={true}
-        />
-      )}
+    <div
+      className="flex flex-col items-center justify-between  w-full h-screen px-40 p-2 mb-2"
+      style={{ background: theme.background, color: theme.fontColor }}
+    >
+      <Previewer
+        essay={data || ({} as essay)}
+        background={theme.editBackground}
+        goEdit={() => {
+          router.push(`${id}/edit`);
+        }}
+      ></Previewer>
       <Footer />
     </div>
   );

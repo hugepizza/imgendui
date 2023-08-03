@@ -11,9 +11,9 @@ export function Bottom({
 }) {
   const [goColor, setGoCoolor] = useState("white");
   return (
-    <div className="flex flex-col flex-wrap justify-start items-start w-full h-10 mt-3 text-center">
+    <div className="flex flex-row justify-start items-start w-1/2 mt-3 text-center h-8">
       <div
-        className="flex justify-center items-center h-full w-16 bg-white"
+        className="flex justify-center items-center h-full w-16 mr-1 bg-white self-start"
         style={{ backgroundColor: goColor }}
         onClick={go}
         onMouseEnter={() => {
@@ -25,18 +25,16 @@ export function Bottom({
       >
         Go
       </div>
-      <div className="flex flex-row justify-center items-center h-full justify-self-end">
-        <input
-          className="h-full mx-4 px-2 border-none"
-          placeholder="Code"
-          onChange={(e) => codeChange(e.target.value)}
-        ></input>
-        <input
-          className="h-full px-2 border-none"
-          placeholder="Url"
-          onChange={(e) => urlChange(e.target.value)}
-        ></input>
-      </div>
+      <input
+        className="flex h-full px-2 mx-1 border-none outline-none min-w-0 self-start"
+        placeholder="Code"
+        onChange={(e) => codeChange(e.target.value)}
+      ></input>
+      <input
+        className="flex h-full  px-2 ml-1 border-none outline-none min-w-0 self-start"
+        placeholder="Url"
+        onChange={(e) => urlChange(e.target.value)}
+      ></input>
     </div>
   );
 }
