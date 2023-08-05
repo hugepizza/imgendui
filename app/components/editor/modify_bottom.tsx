@@ -5,11 +5,15 @@ export function Bottom({
   codeChange,
   newUrlChange,
   newCodeChange: newcodeChange,
+  codeErr,
+  newUrlErr,
 }: {
   save: () => void;
   codeChange: (code: string) => void;
   newUrlChange: (url: string) => void;
   newCodeChange: (url: string) => void;
+  codeErr?: boolean;
+  newUrlErr?: boolean;
 }) {
   const [goColor, setGoCoolor] = useState("white");
   return (
@@ -17,6 +21,7 @@ export function Bottom({
       <div className="flex flex-row justify-center items-center  w-full">
         <input
           className="flex h-8 mr-1 px-2 border-none outline-none flex-1 min-w-0"
+          style={codeErr ? { borderLeft: "3px solid red" } : {}}
           placeholder="Enter edit code"
           onChange={(e) => codeChange(e.target.value)}
         ></input>
@@ -27,6 +32,7 @@ export function Bottom({
         ></input>
         <input
           className="flex h-8 ml-1 px-2 border-none outline-none flex-1 min-w-0"
+          style={newUrlErr ? { borderLeft: "3px solid red" } : {}}
           placeholder="New url - optional"
           onChange={(e) => newUrlChange(e.target.value)}
         ></input>

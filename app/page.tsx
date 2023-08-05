@@ -8,7 +8,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import { Footer } from "./components/foot";
 import { Bottom } from "./components/editor/bottom";
 import { useRequest } from "ahooks";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { ThemeContext } from "./contexts/theme_code";
 import Editor from "./components/editor/editor";
@@ -27,11 +27,24 @@ export default function Home() {
       onSuccess: (result, params) => {
         router.push(`/${result}`);
       },
+      onError(e, params) {
+        if (e instanceof AxiosError) {
+          if (e.response?.status === 403) {
+            setUrlExist(true);
+          }
+          if (e.response?.status === 400) {
+            setEditorErr(true);
+            
+          }
+        }
+      },
     }
   );
   const [content, setContent] = React.useState("");
   const [code, setCode] = React.useState("");
   const [url, setUrl] = React.useState("");
+  const [urlExist, setUrlExist] = React.useState(false);
+  const [editorErr, setEditorErr] = React.useState(false);
   const router = useRouter();
   const theme = useContext(ThemeContext);
 
@@ -39,6 +52,8 @@ export default function Home() {
     setContent(text);
   }
   function go() {
+    if (!content) {
+    }
     if (loading) {
       return;
     }
@@ -57,12 +72,14 @@ export default function Home() {
         content={content}
         handleEditorChange={handleEditorChange}
         background={theme.editBackground}
+        err={editorErr}
       ></Editor>
       <Bottom
         {...{
           go: go,
           codeChange: setCode,
           urlChange: setUrl,
+          exist: urlExist,
         }}
       />
       <Footer />

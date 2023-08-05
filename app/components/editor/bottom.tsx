@@ -4,10 +4,12 @@ export function Bottom({
   go,
   codeChange,
   urlChange,
+  urlErr,
 }: {
   go: () => void;
   codeChange: (code: string) => void;
   urlChange: (url: string) => void;
+  urlErr?: boolean;
 }) {
   const [goColor, setGoCoolor] = useState("white");
   return (
@@ -31,7 +33,8 @@ export function Bottom({
         onChange={(e) => codeChange(e.target.value)}
       ></input>
       <input
-        className="flex h-full  px-2 ml-1 border-none outline-none min-w-0 self-start"
+        className="flex h-full  px-2 ml-1 outline-none min-w-0 self-start"
+        style={urlErr ? { borderLeft: "3px solid red" } : {}}
         placeholder="Url"
         onChange={(e) => urlChange(e.target.value)}
       ></input>

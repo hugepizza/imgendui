@@ -23,10 +23,12 @@ export default function Editor({
   content,
   background,
   handleEditorChange,
+  err,
 }: {
   content: string;
   background: string;
   handleEditorChange?: ({ html, text }: { html: string; text: string }) => void;
+  err?: boolean;
 }) {
   const switchTab = (tab: string) => {
     setActive(tab);
@@ -37,7 +39,11 @@ export default function Editor({
       <Top cb={switchTab} />
       <div
         className="flex w-full flex-grow "
-        style={{ backgroundColor: background }}
+        style={
+          err
+            ? { borderLeft: "3px red solid", backgroundColor: background }
+            : { backgroundColor: background }
+        }
       >
         {active === "Text" ? (
           <MdEditor

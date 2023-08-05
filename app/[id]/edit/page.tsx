@@ -1,23 +1,17 @@
 "use client";
 import React, { ChangeEventHandler, useContext, useEffect } from "react";
-import MarkdownIt from "markdown-it";
-// import style manually
 import "react-markdown-editor-lite/lib/index.css";
-import { v4 as uuidv4 } from "uuid";
 import useSWR from "swr";
 
-import dynamic from "next/dynamic";
 import "react-markdown-editor-lite/lib/index.css";
-import { Top } from "../../components/editor/top";
 import { Footer } from "../../components/foot";
 import { Bottom } from "../../components/editor/modify_bottom";
 import { useRequest } from "ahooks";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeContext } from "../../contexts/theme_code";
 import Editor from "../../components/editor/editor";
-import useSWRMutation from "swr/mutation";
-import { essay } from "@/app/types/essay";
+import { essay, essayUpdate } from "@/app/types/essay";
 
 export default function Edit() {
   const parts = usePathname().split("/");
@@ -30,18 +24,32 @@ export default function Edit() {
     }
   );
 
-  const { trigger, isMutating } = useSWRMutation(
-    `https://api.imgen.space/api/c/${essayUrl}`,
-    async (url: string) => {
-      const resp = await axios.post(
+  const { run, loading } = useRequest(
+    async (essay: essayUpdate) => {
+      const resp = await axios.post<string>(
         `https://api.imgen.space/api/c/${essayUrl}`,
-        {
-          content: data?.content || "",
-          newUrl: newUrl,
-          code: code,
-          newCode: newCode,
-        }
+        essay
       );
+      return resp.data;
+    },
+    {
+      manual: true,
+      onSuccess: () => {
+        router.push(`/${newUrl ? newUrl : essayUrl}`);
+      },
+      onError(e) {
+        if (e instanceof AxiosError) {
+          if (e.response?.status === 401) {
+            setCodeErr(true);
+          }
+          if (e.response?.status === 404) {
+            setUrlExist(true);
+          }
+          if (e.response?.status === 400) {
+            setEditorErr(true);
+          }
+        }
+      },
     }
   );
 
@@ -50,6 +58,9 @@ export default function Edit() {
   const [newUrl, setNewUrl] = React.useState("");
   const router = useRouter();
   const theme = useContext(ThemeContext);
+  const [urlExist, setUrlExist] = React.useState(false);
+  const [codeErr, setCodeErr] = React.useState(false);
+  const [editorErr, setEditorErr] = React.useState(false);
 
   function handleEditorChange({ html, text }: { html: string; text: string }) {
     mutate({ ...data, content: text }, false);
@@ -63,20 +74,26 @@ export default function Edit() {
         content={data?.content || ""}
         handleEditorChange={handleEditorChange}
         background={theme.editBackground}
+        err={editorErr}
       ></Editor>
       <Bottom
         {...{
           save: () => {
-            if (isMutating) {
+            if (loading) {
               return;
             }
-            trigger().then(() => {
-              router.push(`/${newUrl ? newUrl : essayUrl}`);
+            run({
+              content: data?.content || "",
+              newUrl: newUrl,
+              code: code,
+              newCode: newCode,
             });
           },
           codeChange: setCode,
           newUrlChange: setNewUrl,
           newCodeChange: setNewCode,
+          codeErr: codeErr,
+          newUrlErr: urlExist,
         }}
       />
       <Footer />
