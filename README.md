@@ -1,5 +1,13 @@
 # imgendui on Next.js
 
-demo [https://imgen.space]
+### 在线markdown预览编辑，分享url传播文档。
 
-imitate from [https://rentry.org/]
+### online markdown preview and edit, share document by url.
+
+👉 [后端服务](https://github.com/hugepizza/imgendapi)
+
+[backend serevice](https://github.com/hugepizza/imgendapi)
+
+👉 [demo](https://imgen.space)
+
+imitate [rentry](https://rentry.org/)
